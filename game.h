@@ -38,12 +38,16 @@ const ll oo = 1e16;
 
 class Game{
 public:
-    int LOSE = 0;
-    int height, width, numBomb, numSquare, sizeBox, closeBox;
+    int LOSE = 0, Flagleft;
+    bool flagTime = 1;
+    int height, width, numBomb, numSquare, sizeBox, closeBox, startTime = 0, endTime, duration = 0;
     Bomb boxBomb[35][35];
 
+    Button Restart_button = Button(1000,700,150,50,COLOR(223,134,33),"Restart");
+    Button Home_button = Button(1000,600,150,50,COLOR(223,134,33),"Home");
+
     Game (int _width = 0, int _height = 0, int _numBomb = 0){
-        height = _height; width = _width; numBomb = _numBomb;
+        height = _height; width = _width; numBomb = _numBomb; Flagleft = numBomb;
         numSquare = width * height; closeBox = numSquare;
         sizeBox = min(890 / width, 790 / height);
         cout << sizeBox << endl;
@@ -55,6 +59,30 @@ public:
 
         forw(i,1,width,1) forw (j,1,height,1)
             boxBomb[i][j].printBox();
+    }
+
+    void printTime(string TimePrint){
+        textsettingstype charsetting; gettextsettings(&charsetting);
+        if (charsetting.font != BOLD_FONT || charsetting.direction != HORIZ_DIR || charsetting.charsize != 4)
+            settextstyle(BOLD_FONT, HORIZ_DIR, 4);
+        if (charsetting.horiz != CENTER_TEXT || charsetting.vert != CENTER_TEXT)
+            settextjustify(CENTER_TEXT, CENTER_TEXT);
+        setcolor(WHITE); setbkcolor(bgColor);
+        outtextxy(1000,350,&TimePrint[0]);
+    }
+
+    void printFlagleft(){
+        string res = to_string(abs(Flagleft));
+        while (res.size() < 3)res = "0" + res;
+        if (Flagleft < 0)res = "-" + res;
+
+        textsettingstype charsetting; gettextsettings(&charsetting);
+        if (charsetting.font != BOLD_FONT || charsetting.direction != HORIZ_DIR || charsetting.charsize != 4)
+            settextstyle(BOLD_FONT, HORIZ_DIR, 4);
+        if (charsetting.horiz != CENTER_TEXT || charsetting.vert != CENTER_TEXT)
+            settextjustify(CENTER_TEXT, CENTER_TEXT);
+        setcolor(WHITE); setbkcolor(bgColor);
+        outtextxy(1000,500,&res[0]);
     }
 
     void initBoard(){
@@ -88,14 +116,24 @@ public:
         }
 
         printBoard();
+        setcolor(WHITE); setbkcolor(bgColor);
+        outtextxy(1000,300,"TIME");
+        printTime("0000");
+
+        outtextxy(1000,450,"Bomb");
+        printFlagleft();
+
+        Home_button.drawButton();
+//        setfillstyle(SOLID_FILL,COLOR(223,134,33)); bar(470,395,630,445);
+        Restart_button.drawButton();
     }
 
     pp findBox(int coor_x, int coor_y){
         int x = -1,y = -1,l = 1, r = width;
         while (l <= r){
             int mid = (l + r) >> 1;
-            cout << boxBomb[l][1].left << " " << boxBomb[l][1].right << " " << boxBomb[r][1].left << " " << boxBomb[r][1].right << endl;
-            cout << boxBomb[mid][1].left << " " << boxBomb[mid][1].right << endl;
+//            cout << boxBomb[l][1].left << " " << boxBomb[l][1].right << " " << boxBomb[r][1].left << " " << boxBomb[r][1].right << endl;
+//            cout << boxBomb[mid][1].left << " " << boxBomb[mid][1].right << endl;
             if (coor_x >= boxBomb[mid][1].left && coor_x <= boxBomb[mid][1].right){
                 x = mid; break;
             }
@@ -142,8 +180,9 @@ public:
         x = coor.fs; y = coor.sc;
         cout << x << " " << y << endl;
 
-
         if (x == -1 || boxBomb[x][y].openClose)return;
+
+        flagTime = 0;
 
         if (boxBomb[x][y].isBomb){
             boxBomb[x][y].printBomb();
@@ -160,15 +199,18 @@ public:
         x = coor.fs; y = coor.sc;
         cout << x << " " << y << endl;
 
-
         if (x == -1 || boxBomb[x][y].openClose)return;
+
+        flagTime = 0;
 
         if (boxBomb[x][y].Flag){
             boxBomb[x][y].Flag = 0;
             boxBomb[x][y].printBox();
+            ++Flagleft; printFlagleft();
         } else {
             boxBomb[x][y].printFlag();
             boxBomb[x][y].Flag = 1;
+            --Flagleft; printFlagleft();
         }
     }
 
@@ -177,8 +219,9 @@ public:
         pp coor = findBox(x,y);
         x = coor.fs; y = coor.sc;
 
-
         if (x == -1 || !boxBomb[x][y].openClose || !boxBomb[x][y].num)return;
+
+        flagTime = 0;
 
         int Fleft = boxBomb[x][y].num;
         forw(k,0,7,1){
@@ -197,14 +240,36 @@ public:
         }
     }
 //viet tiep checkBox, binsearch findbox
-    bool play(){
+    int play(){
         while (closeBox > numBomb){
             delay(25);
-            if (ismouseclick(WM_LBUTTONDOWN))checkBoxLeft();
+            if (!flagTime){
+                endTime = time(NULL);
+                if (endTime - startTime > duration){
+                    duration = endTime - startTime;
+                    string t = to_string(duration);
+                    while (t.size() < 4)t = "0" + t;
+                    printTime(t);
+                }
+            }
+            if (ismouseclick(WM_LBUTTONDOWN)){
+                checkBoxLeft();
+                cout << "start time: " << startTime << endl;
+                if (!flagTime && !startTime)startTime = time(NULL);
+            }
             if (LOSE)return 0;
-            if (ismouseclick(WM_RBUTTONDOWN))checkBoxRight();
-            if (ismouseclick(WM_LBUTTONDBLCLK))checkBoxDouble();
+            if (ismouseclick(WM_RBUTTONDOWN)){
+                checkBoxRight();
+                if (!flagTime && !startTime)startTime = time(NULL);
+            }
+            if (ismouseclick(WM_LBUTTONDBLCLK)){
+                checkBoxDouble();
+                if (!flagTime && !startTime)startTime = time(NULL);
+            }
             if (LOSE)return 0;
+
+            if (Home_button.checkMousein())return 2;
+            if (Restart_button.checkMousein())return 3;
         }
         return 1;
     }

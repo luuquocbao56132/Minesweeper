@@ -18,17 +18,17 @@ public:
 
         setbkcolor(COLOR(213,64,58)); setcolor(WHITE);
         //Khung nen xanh
-        setfillstyle(SOLID_FILL,COLOR(18,103,72)); bar(100,300,700,500);
+//        setfillstyle(SOLID_FILL,COLOR(18,103,72)); bar(100,300,700,500);
         //Dong thong bao
-        setfillstyle(SOLID_FILL,COLOR(213,64,58)); bar(100,300,700,350);
-        outtextxy(400,330,Text);
+        setfillstyle(SOLID_FILL,COLOR(213,64,58)); bar(900,100,1100,200);
+        outtextxy(1000,150,Text);
 
 //        setfillstyle(SOLID_FILL,COLOR(223,134,33)); bar(180,395,320,445);
-        Button Home_button = Button(250,425,150,50,COLOR(223,134,33),"Home");
+        Button Restart_button = Button(1000,700,150,50,COLOR(223,134,33),"Restart");
+        Button Home_button = Button(1000,600,150,50,COLOR(223,134,33),"Home");
         Home_button.drawButton();
-
-//        setfillstyle(SOLID_FILL,COLOR(223,134,33)); bar(470,395,630,445);
-        Button Restart_button = Button(550,425,150,50,COLOR(223,134,33),"Restart");
+//
+////        setfillstyle(SOLID_FILL,COLOR(223,134,33)); bar(470,395,630,445);
         Restart_button.drawButton();
 
         while (1){
@@ -40,9 +40,12 @@ public:
 
     void Newgame(int x, int y, int bomb){
         Game game = Game(x,y,bomb);
-        bool status = game.play();
+        int status = game.play();
 
-        if (status)EndAnounce("You Win!",x,y,bomb); else EndAnounce("You Lose!",x,y,bomb);
+        if (status == 1)EndAnounce("You win!",x,y,bomb); else
+        if (status == 0)EndAnounce("You Lose!",x,y,bomb); else
+        if (status == 2)startMenu(); else
+        if (status == 3)Newgame(x,y,bomb);
     }
 
     void startMenu(){
