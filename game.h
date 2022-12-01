@@ -39,12 +39,12 @@ const ll oo = 1e16;
 class Game{
 public:
     int LOSE = 0;
-    int height, width, numBomb, numSquare, sizeBox;
+    int height, width, numBomb, numSquare, sizeBox, closeBox;
     Bomb boxBomb[35][35];
 
     Game (int _width = 0, int _height = 0, int _numBomb = 0){
         height = _height; width = _width; numBomb = _numBomb;
-        numSquare = width * height;
+        numSquare = width * height; closeBox = numSquare;
         sizeBox = min(890 / width, 790 / height);
         cout << sizeBox << endl;
         initBoard();
@@ -90,17 +90,6 @@ public:
         printBoard();
     }
 
-    void printLosemenu(){
-//        Button Home_button = Button(400,400,50,20,COLOR(223,134,33),"Home");
-//        Home_button.drawButton();
-//        while (1){
-//            if (Home_button.checkMousein()){
-//                Menu home; home.startMenu();
-//                return;
-//            }
-//        }
-    }
-
     pp findBox(int coor_x, int coor_y){
         int x = -1,y = -1,l = 1, r = width;
         while (l <= r){
@@ -136,7 +125,7 @@ public:
     }
 
     void openzero(int x, int y){
-        boxBomb[x][y].openClose = 1; boxBomb[x][y].printBox();
+        boxBomb[x][y].openClose = 1; boxBomb[x][y].printBox(); --closeBox;
         if (boxBomb[x][y].num)return;
 
         forw(k,0,7,1){
@@ -158,8 +147,7 @@ public:
 
         if (boxBomb[x][y].isBomb){
             boxBomb[x][y].printBomb();
-            LOSE = 1;
-            printLosemenu(); return;
+            LOSE = 1; return;
         }
 
         openzero(x,y);
@@ -209,21 +197,18 @@ public:
         }
     }
 //viet tiep checkBox, binsearch findbox
-    void play(){
-        while (1){
+    bool play(){
+        while (closeBox > numBomb){
             delay(25);
             if (ismouseclick(WM_LBUTTONDOWN))checkBoxLeft();
-            if (LOSE)break;
+            if (LOSE)return 0;
             if (ismouseclick(WM_RBUTTONDOWN))checkBoxRight();
             if (ismouseclick(WM_LBUTTONDBLCLK))checkBoxDouble();
-            if (LOSE)break;
+            if (LOSE)return 0;
         }
+        return 1;
     }
 };
 
-void Newgame(int x, int y, int bomb){
-    Game game = Game(x,y,bomb);
-    game.play();
-}
 
 #endif // _GAME_H_

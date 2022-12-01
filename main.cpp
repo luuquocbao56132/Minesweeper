@@ -14,7 +14,6 @@ int main(){
     //forw(i,1,a,1) forw(i,1,b,1)cout << i;
     getch();
     closegraph();
-
 }
 
 
