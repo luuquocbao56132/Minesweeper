@@ -1,0 +1,45 @@
+#include <bits/stdc++.h>
+#include <graphics.h>
+#include "button.h"
+#include "game.h"
+
+// 18 103 72
+
+class Menu{
+
+public:
+
+    void startMenu(){
+        //print menu
+        Button easy_but = Button(250,300,250,60,COLOR(60,148,39), "Easy 9x9");
+        Button medium_but = Button(600,300,250,60,COLOR(213,117,4), "Medium 16x16");
+        Button expert_but = Button(950,300,250,60,COLOR(204,54,47), "Expert 30x16");
+        Button loadgame_but = Button(600,450,250,60,COLOR(3,114,197),"Load game");
+        Button score_but = Button(600,600,250,60,COLOR(3,114,197),"Scoreboard");
+
+        setbkcolor(COLOR(18,103,72));
+        cleardevice();
+        setfillstyle(SOLID_FILL,COLOR(13,72,51));
+        bar(0,0,1200,135);
+        settextstyle(BOLD_FONT,0,6);
+        setbkcolor(COLOR(13,72,51));
+        settextjustify(CENTER_TEXT, CENTER_TEXT);
+        outtextxy(600,80,"Minesweeper");
+
+        easy_but.drawButton();
+        medium_but.drawButton();
+        expert_but.drawButton();
+
+        loadgame_but.drawButton();
+        score_but.drawButton();
+
+        // check what user doing
+        while(1){
+            if (easy_but.checkMousein()){Newgame(9,9,10); return;}
+            if (medium_but.checkMousein()){Newgame(16,16,40); return;}
+            if (expert_but.checkMousein()){Newgame(32,16,100); return; }
+//            if (loadgame_but.checkMousein()){Loadgame(); return; }
+//            if (score_but.checkMousein()){PrintScore(); return; }
+        }
+    }
+};
