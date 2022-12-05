@@ -59,7 +59,6 @@ class Bomb {
     }
 
     void printOpen(){
-        cout << x << " " << y << endl;
         setfillstyle(SOLID_FILL,COLOR(254,254,254));
         setbkcolor(COLOR(254,254,254));
 ////        cout << Button_color << " " << midx << " " << midy << endl;

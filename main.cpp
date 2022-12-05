@@ -8,10 +8,6 @@ int main(){
     initwindow(1200, 800, "Minesweeper");
     Menu menu;
     menu.startMenu();
-    //initBomb();
-//    setbkcolor(LIGHTGRAY); cleardevice();
-//    setcolor(WHITE);
-    //forw(i,1,a,1) forw(i,1,b,1)cout << i;
     getch();
     closegraph();
 }
