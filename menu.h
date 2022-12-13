@@ -17,11 +17,12 @@ public:
         if (charsetting.horiz != CENTER_TEXT || charsetting.vert != CENTER_TEXT)
             settextjustify(CENTER_TEXT, CENTER_TEXT);
 
-        setbkcolor(COLOR(213,64,58)); setcolor(WHITE);
+        setbkcolor(COLOR(213,64,58)); setfillstyle(SOLID_FILL,COLOR(213,64,58));
+        setcolor(WHITE);
         //Khung nen xanh
 //        setfillstyle(SOLID_FILL,COLOR(18,103,72)); bar(100,300,700,500);
         //Dong thong bao
-        setfillstyle(SOLID_FILL,COLOR(213,64,58)); bar(900,100,1100,200);
+        bar(900,100,1100,200);
         outtextxy(1000,150,Text);
 
 //        setfillstyle(SOLID_FILL,COLOR(223,134,33)); bar(180,395,320,445);
@@ -48,7 +49,7 @@ public:
             int st = game.printallBomb();
             if (st == 2)startMenu(); else
             if (st == 3)Newgame(x,y,bomb);
-            EndAnounce("You Lose!",x,y,bomb);
+            EndAnounce("You lose!",x,y,bomb);
         }
         else if (status == 2)startMenu(); else
         if (status == 3)Newgame(x,y,bomb);
