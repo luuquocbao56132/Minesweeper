@@ -13,12 +13,13 @@ int Hover = COLOR(214,244,255), Bar = COLOR(164,185,177);
 
 class Button{
 public:
-    int top,bot,left,right,midx,midy,width,height,textSize, Button_color;
+    int top,bot,left,right,midx,midy,width,height,textSize, Buttoncolor, Textcolor;
     char *Text;
     bool sta;
 
-    Button(int _midx, int _midy, int _width, int _height, int Buttoncolor, char *_Text){
-        midx = _midx; midy = _midy; width = _width; height = _height; Button_color = Buttoncolor; Text = _Text;
+    Button(int _midx, int _midy, int _width, int _height, int _Buttoncolor, int _Textcolor, char *_Text){
+        midx = _midx; midy = _midy; width = _width; height = _height; Buttoncolor = _Buttoncolor; Text = _Text;
+        Textcolor = _Textcolor;
         top = midy - (height>>1); bot = midy + (height>>1);
         left = midx - (width>>1); right = midx + (width>>1);
     }
@@ -38,12 +39,14 @@ public:
             }
         } while (checkIn(mousex(), mousey()));
 
-        drawButton();
+        setcolor(Buttoncolor); rectangle(left,top,right,bot);
+        rectangle(left+1,top+1,right-1,bot-1);
+        //drawButton();
         return 0;
     }
 
     void drawButton(){
-        setfillstyle(SOLID_FILL,Button_color);
+        setfillstyle(SOLID_FILL,Buttoncolor);
 //        cout << Button_color << " " << midx << " " << midy << endl;
 //        cout << top << " " << left << " " << bot << " " << right << endl;
         bar(left, top, right+1, bot+1);
@@ -51,15 +54,15 @@ public:
 //        setcolor(Bar);
 //        rectangle(left,top,right,bot);
 
-        setbkcolor(Button_color);
+        setbkcolor(Buttoncolor);
 
         textsettingstype charsetting; gettextsettings(&charsetting);
-        if (charsetting.font != BOLD_FONT || charsetting.direction != HORIZ_DIR || charsetting.charsize != 3)
-            settextstyle(BOLD_FONT, HORIZ_DIR, 3);
+        if (charsetting.font != BOLD_FONT || charsetting.direction != HORIZ_DIR || charsetting.charsize != 4)
+            settextstyle(BOLD_FONT, HORIZ_DIR, 4);
         if (charsetting.horiz != CENTER_TEXT || charsetting.vert != CENTER_TEXT)
             settextjustify(CENTER_TEXT, CENTER_TEXT);
 
-        setcolor(WHITE);
+        setcolor(Textcolor);
         outtextxy(midx,midy,Text);
     }
 };

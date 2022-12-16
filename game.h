@@ -34,27 +34,51 @@ public:
     int height, width, numBomb, numSquare, sizeBox, closeBox, startTime = 0, endTime = 0, duration = 0;
     Bomb boxBomb[35][35];
 
-    Button Restart_button = Button(1000,700,150,50,COLOR(223,134,33),"Restart");
-    Button Home_button = Button(1000,600,150,50,COLOR(223,134,33),"Home");
+    Button Restart_button = Button(1000,700,150,50,COLOR(164, 113, 71),COLOR(255, 204, 165),"Restart");
+    Button Home_button = Button(1000,600,150,50,COLOR(164, 113, 71),COLOR(255, 204, 165),"Home");
 
     Game (int _width = 0, int _height = 0, int _numBomb = 0, int _mode = 0){
         height = _height; width = _width; numBomb = _numBomb; Flagleft = numBomb; mode = _mode;
         numSquare = width * height; closeBox = numSquare;
-        sizeBox = min(890 / width, 790 / height);
+        sizeBox = min({80,890 / width, 790 / height});
         cout << sizeBox << endl;
-        forw(i,1,width,1) forw (j,1,height,1) boxBomb[i][j] = Bomb(0,0,0,i,j,sizeBox);
+        forw(i,1,width,1) forw (j,1,height,1) boxBomb[i][j] = Bomb(0,0,0,i,j,sizeBox,width,height);
     }
 
     void printBoard(){
-        setbkcolor(bgColor); cleardevice();
+        setbkcolor(bgColor);
+        readimagefile("pics/play.gif",0,0,1200,800);
 
         forw(i,1,width,1) forw (j,1,height,1)boxBomb[i][j].printBox();
 
-        setcolor(WHITE); setbkcolor(bgColor);
-        outtextxy(1000,300,"TIME");
+        textsettingstype charsetting; gettextsettings(&charsetting);
+        if (charsetting.font != BOLD_FONT || charsetting.direction != HORIZ_DIR || charsetting.charsize != 4)
+            settextstyle(BOLD_FONT, HORIZ_DIR, 4);
+        if (charsetting.horiz != CENTER_TEXT || charsetting.vert != CENTER_TEXT)
+            settextjustify(CENTER_TEXT, CENTER_TEXT);
+
+        setcolor(COLOR(48, 50, 53)); setbkcolor(COLOR(154, 103, 59));
+        setfillstyle(SOLID_FILL,COLOR(154, 103, 59));
+
+        setfillstyle(SOLID_FILL,COLOR(110, 80, 50));
+        bar(1000-80,300-30,1000+80,300+20);
+        bar(1000-80,300-30,1000+80,300+20+60);
+        setfillstyle(SOLID_FILL,COLOR(154, 103, 59));
+        bar(1000-75,300-25,1000+75,300+15);
+        bar(1000-75,300+20,1000+75,300+15+60);
+        setcolor(COLOR(48, 50, 53));
+        outtextxy(1000,302,"TIME");
         printTime();
 
-        outtextxy(1000,450,"Bomb");
+
+        setfillstyle(SOLID_FILL,COLOR(110, 80, 50));
+        bar(1000-80,450-30,1000+80,450+20);
+        bar(1000-80,450-30,1000+80,450+20+60);
+        setfillstyle(SOLID_FILL,COLOR(154, 103, 59));
+        bar(1000-75,450-25,1000+75,450+15);
+        bar(1000-75,450+20,1000+75,450+15+60);
+        setcolor(COLOR(48, 50, 53));
+        outtextxy(1000,452,"BOMB");
         printFlagleft();
 
         Home_button.drawButton();
@@ -70,11 +94,12 @@ public:
             settextstyle(BOLD_FONT, HORIZ_DIR, 4);
         if (charsetting.horiz != CENTER_TEXT || charsetting.vert != CENTER_TEXT)
             settextjustify(CENTER_TEXT, CENTER_TEXT);
-        setcolor(WHITE); setbkcolor(bgColor);
-        outtextxy(1000,350,&t[0]);
+        setcolor(COLOR(48, 50, 53)); setbkcolor(COLOR(154, 103, 59));
+        outtextxy(1000,355,&t[0]);
     }
 
     void printFlagleft(){
+        setfillstyle(SOLID_FILL,COLOR(154, 103, 59));
         string res = to_string(abs(Flagleft));
         while (res.size() < 3)res = "0" + res;
         if (Flagleft < 0)res = "-" + res;
@@ -84,24 +109,32 @@ public:
             settextstyle(BOLD_FONT, HORIZ_DIR, 4);
         if (charsetting.horiz != CENTER_TEXT || charsetting.vert != CENTER_TEXT)
             settextjustify(CENTER_TEXT, CENTER_TEXT);
-        setcolor(WHITE); setbkcolor(bgColor);
-        outtextxy(1000,500,&res[0]);
+        setcolor(COLOR(48, 50, 53)); setbkcolor(COLOR(154, 103, 59));
+        outtextxy(1000,505,&res[0]);
     }
 
     int printallBomb(){
-        forw(i,1,width,1) forw(j,1,height,1) if (boxBomb[i][j].isBomb)
-            boxBomb[i][j].openClose = 1, boxBomb[i][j].printBomb();
+        forw(i,0,numBomb-1,1){
+            int x = Stt[Ran_first[i]].fs, y = Stt[Ran_first[i]].sc;
+            boxBomb[x][y].printBomb();
+        }
     }
 
     void initBoard(int x, int y){
-        int ii = 0;
+        int ii = 0, hieu = x*y - numBomb;
 
         cout << width << " " << height << endl;
 
         forw(i,1,width,1) forw(j,1,height,1){
-            if (min(abs(x-i),abs(y-j)) < 2)continue;
-            Stt[++ii] = {i,j};
-            Ran_first.push_back(ii);
+            if (abs(x-i) < 2 && abs(y-j) < 2){
+                if(hieu >= 9)continue;
+                Stt[++ii] = {i,j};
+                Ran_first.push_back(ii);
+                ++hieu;
+            } else {
+                Stt[++ii] = {i,j};
+                Ran_first.push_back(ii);
+            }
         }
 
         random_shuffle(Ran_first.begin(), Ran_first.end());
@@ -150,14 +183,19 @@ public:
     }
 
     void openzero(int x, int y){
-        boxBomb[x][y].openClose = 1; boxBomb[x][y].printBox(); --closeBox;
-        if (boxBomb[x][y].Flag)++Flagleft; printFlagleft();
-        if (boxBomb[x][y].num)return;
+        queue <pp> q; q.push({x,y});
+        while (!q.empty()){
+            x = q.front().fs; y = q.front().sc; q.pop();
+            if (boxBomb[x][y].openClose)continue;
+            boxBomb[x][y].openClose = 1; boxBomb[x][y].printBox(); --closeBox;
+            if (boxBomb[x][y].Flag)++Flagleft;
+            if (boxBomb[x][y].num)continue;
 
-        forw(k,0,7,1){
-            int xx = x + dx[k], yy = y + dy[k];
-            if (inside(xx,yy) && !boxBomb[xx][yy].isBomb && !boxBomb[xx][yy].openClose)
-                openzero(xx,yy);
+            forw(k,0,7,1){
+                int xx = x + dx[k], yy = y + dy[k];
+                if (inside(xx,yy) && !boxBomb[xx][yy].isBomb && !boxBomb[xx][yy].openClose)
+                    q.push({xx,yy});
+            }
         }
     }
 
@@ -177,6 +215,7 @@ public:
         }
 
         openzero(x,y);
+        printFlagleft();
         return 1;
     }
 
@@ -209,8 +248,15 @@ public:
         pp coor = findBox(x,y);
         x = coor.fs; y = coor.sc;
 
-        if (x == -1 || !boxBomb[x][y].openClose || !boxBomb[x][y].num)return 0;
+        if (x == -1 || boxBomb[x][y].Flag || !boxBomb[x][y].num)return 0;
 
+        if (boxBomb[x][y].isBomb){
+            boxBomb[x][y].printBomb();
+            LOSE = 1; return 0;
+        }
+
+        if (!boxBomb[x][y].openClose)openzero(x,y);
+        if (!boxBomb[x][y].num)return 1;
         flagTime = 0;
 
         int Fleft = boxBomb[x][y].num;
@@ -225,8 +271,7 @@ public:
                 if (!inside(xx,yy))continue;
                 if (boxBomb[xx][yy].Flag || boxBomb[xx][yy].openClose)continue;
                 if (boxBomb[xx][yy].isBomb){LOSE = 1; boxBomb[xx][yy].printBomb(); return 0;}
-                boxBomb[xx][yy].openClose = 1; boxBomb[xx][yy].printBox();
-                if (!boxBomb[xx][yy].num)openzero(xx,yy); else --closeBox;
+                openzero(xx,yy); printFlagleft();
             }
         }
 
@@ -260,18 +305,6 @@ public:
         } //cout << endl;
 
         tfile.close();
-
-        forw(i,1,width,1) {
-            forw(j,1,height,1){
-                int t = boxBomb[i][j].openClose << 2;
-                cout << i << " " << j << ": " << t << " ";
-                t |= (boxBomb[i][j].isBomb << 1);
-                cout << t << " ";
-                t |= boxBomb[i][j].Flag;
-                cout << t << endl;
-            }
-            cout << endl;
-        }
     }
 
     void clearfile(){
@@ -286,7 +319,8 @@ public:
         string T;
         if (!mode)T = "Easy"; else
         if (mode == 1)T = "Medium"; else
-        if (mode == 2)T = "Expert";
+        if (mode == 2)T = "Expert"; else
+        if (mode == 3)T = "Master";
         int Rank[15];
         ifstream infile; infile.open("save\\"+T+".log");
         forw(i,1,10,1)infile >> Rank[i]; Rank[11] = duration;
@@ -297,12 +331,8 @@ public:
         outfile.close();
         //code save diem
     }
-
-    int play(){
-        while (closeBox > numBomb){
-            //cout << "closeBox: " << closeBox << endl;
-            delay(25);
-            if (!flagTime){
+    void checkTime(){
+        if (!flagTime){
                 endTime = time(NULL);
                 if (endTime - startTime > duration){
                     duration = endTime - startTime;
@@ -310,6 +340,32 @@ public:
                     saveTime(duration);
                 }
             }
+    }
+
+    bool checkIn(int x, int y,int left, int top, int right, int bot)
+    {return left <= x && x <= right && top <= y && y <= bot;}
+
+    bool checkMousein(bool t, int left, int top, int right, int bot){
+        if (!checkIn(mousex(), mousey(),left,top,right,bot)){return 0;}
+        setcolor(Hover); rectangle(left,top,right,bot);
+        rectangle(left+1,top+1,right-1,bot-1);
+        do {
+            checkTime();
+            while (ismouseclick(WM_LBUTTONDOWN)){
+                int x,y; getmouseclick(WM_LBUTTONDOWN,x,y);
+                if (checkIn(x,y,left,top,right,bot))return 1;
+            }
+        } while (checkIn(mousex(), mousey(),left,top,right,bot));
+
+        if (!t)Home_button.drawButton(); else Restart_button.drawButton();
+        return 0;
+    }
+
+    int play(){
+        while (closeBox > numBomb){
+            //cout << "closeBox: " << closeBox << endl;
+            delay(25);
+            checkTime();
             if (ismouseclick(WM_LBUTTONDOWN)){
                 if (checkBoxLeft())saveBoard();
                 if (!flagTime && !startTime)startTime = time(NULL);
@@ -320,17 +376,16 @@ public:
                 if (!flagTime && !startTime)startTime = time(NULL);
             }
             if (ismouseclick(WM_LBUTTONDBLCLK)){
-                cout << "closeBox: " << closeBox << endl;
                 if(checkBoxDouble())saveBoard();
                 if (!flagTime && !startTime)startTime = time(NULL);
             }
             if (LOSE)return 0;
 
-            if (Home_button.checkMousein()){return 2;}
-            if (Restart_button.checkMousein()){clearfile(); return 3;}
+            if (checkMousein(0,Home_button.left,Home_button.top,Home_button.right,Home_button.bot)){return 2;}
+            if (checkMousein(1,Restart_button.left,Restart_button.top,Restart_button.right,Restart_button.bot)){clearfile(); return 3;}
         }
         //clearfile();
-        saveScore();
+        if (mode < 4)saveScore();
         return 1;
     }
 };

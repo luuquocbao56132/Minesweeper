@@ -14,12 +14,12 @@
 
 class Scoreboard{
 public:
-    string modeArray[3] = {"Easy","Medium","Expert"};
-    int Rank[3][11], color[3] = {COLOR(60,148,39),COLOR(213,117,4),COLOR(204,54,47)};
+    string modeArray[4] = {"Easy","Medium","Expert","Master"};
+    int Rank[11], color[4] = {COLOR(207, 158, 78),COLOR(150, 103, 39),COLOR(123, 73, 9), COLOR(79, 50, 24)};
 
     Scoreboard(int t) {
         setbkcolor(COLOR(18,103,72));
-        cleardevice();
+        readimagefile("pics/score.gif",0,0,1200,800);
         print(0);
     }
 
@@ -31,7 +31,7 @@ public:
 
     void getRank(string T, int mode){
         ifstream tfile; tfile.open("save\\"+T+".log");
-        forw(i,1,10,1)tfile >> Rank[mode][i];
+        forw(i,1,10,1)tfile >> Rank[i];
         tfile.close();
     }
 
@@ -54,13 +54,15 @@ public:
         outtextxy(475,225,&Text[0]); rectangle(400,200,550,250);
         forw(i,1,10,1){
             Text = to_string(i);
-            Text = "#" + Text;
             outtextxy(475,250+40*(i-1)+25,&Text[0]);
             rectangle(400,250+40*(i-1),550,250+40*i);
 
-            if (Rank[mode][i] != 1000000){
-                Text = to_string(Rank[mode][i]);
-                while (Text.size() < 4)Text = "0" + Text;
+            if (Rank[i] != 1000000){
+                int res = Rank[i] / 60;
+                Text = to_string(res) + ":";
+                while (Text.size() < 3)Text = "0" + Text;
+                res = Rank[i] - Rank[i]/60*60;
+                Text = Text + (res < 10 ? "0" : "") + to_string(res);
             } else Text = "N/A";
             outtextxy(680,250+40*(i-1)+25,&Text[0]);
             rectangle(550,250+40*(i-1),800,250+40*i);

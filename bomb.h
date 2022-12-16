@@ -13,8 +13,8 @@ typedef long long ll;
 typedef long double ldb;
 typedef pair <int,int> pp;
 
-const int charColor[] = {0,COLOR(35,189,223),COLOR(111,146,26),COLOR(198,50,108),COLOR(38,91,190),COLOR(190,52,52),6,3,1};
-const int bgColor = COLOR(50,55,61);
+const int charColor[] = {0,COLOR(0, 74, 173),COLOR(111,146,26),COLOR(198,50,108),COLOR(38,91,190),COLOR(190,52,52),6,3,1};
+const int bgColor = COLOR(26, 25, 25);
 
 // 1 : 35 189 223
 // 2 : 111 146 26
@@ -26,25 +26,27 @@ const int bgColor = COLOR(50,55,61);
 class Bomb {
     public:
     bool Flag, isBomb, openClose;
-    int sizeBox, num = 0, x, y, left,top,bot,right, midx, midy;
+    int sizeBox, num = 0, x, y, left,top,bot,right, midx, midy, width, height, widAdd, heiAdd;
 
-    Bomb (bool _openClose = 0, bool _isBomb = 0, bool _Flag = 0, int _x = 0, int _y = 0, int _sizeBox = 0){
-        openClose = _openClose; isBomb = _isBomb; Flag = _Flag; x = _x; y = _y; sizeBox = _sizeBox;
-        left = sizeBox*(x-1)+10; top = sizeBox*(y-1) + 10; right = sizeBox*x + 10; bot = sizeBox*y + 10;
+    Bomb (bool _openClose = 0, bool _isBomb = 0, bool _Flag = 0, int _x = 0, int _y = 0, int _sizeBox = 0,int _width = 9, int _height = 9){
+        openClose = _openClose; isBomb = _isBomb; Flag = _Flag; x = _x; y = _y; sizeBox = _sizeBox; width = _width; height = _height;
+        widAdd = 450-(int)((double)width/2*sizeBox); heiAdd = 400-(int)((double)height/2*sizeBox);
+        left = sizeBox*(x-1)+ widAdd; right = sizeBox*x + widAdd;
+        top = sizeBox*(y-1) + heiAdd; bot = sizeBox*y + heiAdd;
         midx = (left + right) >> 1; midy = (top + bot) >> 1;
     }
 
     void printBomb(){
         if (!isBomb)return;
         int res = sizeBox / 4;
-        readimagefile("pics/bomb.gif",left+1,top+1,right-1,bot-1);
+        readimagefile("pics/bomb.bmp",left+1,top+1,right-1,bot-1);
     }
 
     void printFlag(){
         setfillstyle(SOLID_FILL,YELLOW);
         bar(left,top,right,bot);
         setcolor(bgColor);
-        rectangle(sizeBox*(x-1)+10, sizeBox*(y-1) + 10, sizeBox*x + 10, sizeBox*y + 10);
+        rectangle(sizeBox*(x-1)+widAdd, sizeBox*(y-1) + heiAdd, sizeBox*x + widAdd, sizeBox*y + heiAdd);
         int res = sizeBox / 4;
         readimagefile("pics/flag.bmp",left+res,top+res,right-res,bot-res);
     }
@@ -52,10 +54,10 @@ class Bomb {
     void printClose(){
         if (Flag){printFlag(); return;}
 
-        setfillstyle(SOLID_FILL,COLOR(103,183,255));
+        setfillstyle(SOLID_FILL,COLOR(177, 97, 47));
         bar(left,top,right,bot);
         setcolor(bgColor);
-        rectangle(sizeBox*(x-1)+10, sizeBox*(y-1) + 10, sizeBox*x + 10, sizeBox*y + 10);
+        rectangle(sizeBox*(x-1)+widAdd, sizeBox*(y-1) + heiAdd, sizeBox*x + widAdd, sizeBox*y + heiAdd);
     }
 
     void printOpen(){
